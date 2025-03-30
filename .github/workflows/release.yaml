@@ -1,11 +1,11 @@
 name: Deploy project
 
 on:
-  release:
-    types: [published]
+  pull_request:
+    types: [closed]
 
 jobs:
-  deploy-release:
+  merge-jobs:
     runs-on: ubuntu-latest
     container:
       image: salesforce/cli:latest-slim
