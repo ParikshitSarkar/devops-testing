@@ -21,4 +21,13 @@ jobs:
 
       - name: 'Deploy'
         run: |
-          sf project deploy start -d force-app/ -l RunLocalTests -w 30          
+          sf project deploy start -d force-app/ -l RunLocalTests -w 30  
+      
+          
+      - name: 'Authenticate using SFDX_AUTH_URL 2'
+        run: |
+          echo ${{ secrets.SFDX_AUTH_URL2 }} | sf org login sfdx-url -s -u          
+  
+      - name: 'Deploy'
+        run: |
+          sf project deploy start -d force-app/ -l RunLocalTests -w 30 
