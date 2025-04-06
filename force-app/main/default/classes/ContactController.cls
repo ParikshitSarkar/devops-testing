@@ -1,7 +1,7 @@
 public class ContactController {
     
     /**
-     * description: used for fetching list of contacts
+     * description: used for fetching list of contacts....
      */
     @AuraEnabled(cacheable=true)
     public static List<Contact> getConList(){
