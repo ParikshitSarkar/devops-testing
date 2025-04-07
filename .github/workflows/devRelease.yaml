@@ -6,8 +6,6 @@ on:
     workflows:
         - Deploy project
     types: [completed]
-    paths:
-      - 'force-app/**'
 
 jobs:
   merge-jobs:
