@@ -1,5 +1,5 @@
 
-name: Deploy project
+name: Deploy project into Dev
 
 on:
   workflow_run: 
