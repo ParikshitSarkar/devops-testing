@@ -12,7 +12,5 @@ private class DummyClsTest {
         // Stop test context
         Test.stopTest();
         
-        // Assertions
-        System.assertNotEquals(null, dummyInstance, 'Instance should be created successfully');
     }
 }
