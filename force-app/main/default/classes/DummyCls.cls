@@ -1,6 +1,6 @@
 public with sharing class DummyCls {
-    //constructor
+    //constructor...
     public DummyCls() {
-
+        //some comment!!!
     }
 }
