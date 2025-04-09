@@ -17,7 +17,7 @@ jobs:
             
       - name: 'Authenticate using SFDX_AUTH_URL'
         run: |
-          echo ${{ secrets.SFDX_AUTH_URL }} | sf org login sfdx-url -s -u          
+          echo ${{ secrets.SFDX_AUTH_URL }} | sf org login sfdx-url -s -targetusername pipelinesorg          
 
       - name: 'Deploy'
         run: |
@@ -26,8 +26,22 @@ jobs:
           
       - name: 'Authenticate using SFDX_AUTH_URL 2'
         run: |
-          echo ${{ secrets.SFDX_AUTH_URL2 }} | sf org login sfdx-url -s -u          
+          echo ${{ secrets.SFDX_AUTH_URL2 }} | sf org login sfdx-url -s -targetusername miltonOrg          
   
       - name: 'Deploy to Dev'
         run: |
           sf project deploy start -d force-app -targetusername miltonOrg 
+
+      # We use SFDX Git Delta to create a directory with only the metadata that has changed.
+      # this allows us to deploy only those changes, as opposed to deploying the entire branch.
+      # This helps reducing deployment times
+      - name: "Create delta packages for new, modified or deleted metadata"
+        run: |
+            mkdir changed-sources
+            sf sgd:source:delta --to "HEAD" --from "HEAD^" --output changed-sources/ --generate-delta --source force-app/
+
+      
+      - name: "Deploy Delta Changes - Dry Run - No Tests Run"
+        run: |
+            sf project deploy start -x changed-sources/package/package.xml --post-destructive-changes changed-sources/destructiveChanges/destructiveChanges.xml -l NoTestRun --json
+
