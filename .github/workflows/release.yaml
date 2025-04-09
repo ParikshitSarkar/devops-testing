@@ -17,7 +17,7 @@ jobs:
             
       - name: 'Authenticate using SFDX_AUTH_URL'
         run: |
-          echo ${{ secrets.SFDX_AUTH_URL }} | sf org login sfdx-url -s -u          
+          echo ${{ secrets.SFDX_AUTH_URL }} | sf org login sfdx-url -s -targetusername pipelinesorg         
 
       - name: 'Deploy'
         run: |
@@ -26,7 +26,7 @@ jobs:
           
       - name: 'Authenticate using SFDX_AUTH_URL 2'
         run: |
-          echo ${{ secrets.SFDX_AUTH_URL2 }} | sf org login sfdx-url -s -u          
+          echo ${{ secrets.SFDX_AUTH_URL2 }} | sf org login sfdx-url -s -targetusername miltonOrg         
   
       - name: 'Deploy to Dev'
         run: |
