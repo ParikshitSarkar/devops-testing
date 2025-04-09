@@ -17,7 +17,7 @@ jobs:
 
       - name: "Installing sfdx git delta"
         run: |
-          echo y | sf plugins:install sfdx-git-delta
+          echo y | sf plugins:install sfdx-git-delta@5.42.0
           sf plugins
 
       - name: "Populate auth file with SFDX_URL secret of pipelinesorg org"
