@@ -37,7 +37,7 @@ jobs:
           
       - name: 'Deploy to Dev'
         run: |
-          sf project deploy start -d force-app --target-org miltonOrg 
+          sf project deploy start -d force-app --target-org "klomax@abcd.com" 
 
       # We use SFDX Git Delta to create a directory with only the metadata that has changed.
       # this allows us to deploy only those changes, as opposed to deploying the entire branch.
