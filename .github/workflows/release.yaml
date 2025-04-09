@@ -21,7 +21,7 @@ jobs:
 
       - name: 'Deploy'
         run: |
-          sf project deploy start -d force-app -u pipelinesorg  
+          sf project deploy start -d force-app --targetusername pipelinesorg  
       
           
       - name: 'Authenticate using SFDX_AUTH_URL 2'
@@ -30,4 +30,4 @@ jobs:
   
       - name: 'Deploy to Dev'
         run: |
-          sf project deploy start -d force-app -u miltonOrg 
+          sf project deploy start -d force-app --targetusername miltonOrg 
