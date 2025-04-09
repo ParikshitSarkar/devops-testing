@@ -21,7 +21,7 @@ jobs:
 
       # Authenticate to org using the URL stored in the text file
       - name: "Authenticate to pipelinesorg Org"
-        run: sf org login sfdx-url -f ./authFile.txt -s -a pipelinesorg
+        run: sf org login sfdx-url --sfdx-url-file authFile.json
             
       - name: 'Deploy'
         run: |
@@ -33,7 +33,7 @@ jobs:
 
       # Authenticate to org using the URL stored in the text file
       - name: "Authenticate to miltonOrg Org"
-        run: sf org login sfdx-url -f ./authFile2.txt -s -a miltonOrg
+        run: sf org login sfdx-url --sfdx-url-file authFile2.json
           
       - name: 'Deploy to Dev'
         run: |
