@@ -25,7 +25,7 @@ jobs:
             
       - name: 'Deploy'
         run: |
-          sf project deploy start -d force-app --target-org pipelinesorg  
+          sf project deploy start -d force-app --target-org "dummypipelinetestingorg@abcd.com"    
 
       - name: "Populate auth file with SFDX_URL secret of miltonOrg org"
         run: |
