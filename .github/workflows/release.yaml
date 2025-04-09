@@ -24,7 +24,6 @@ jobs:
         run: |
           echo ${{ secrets.SFDX_AUTH_URL}} > ./authFile.txt
 
-      # Authenticate to org using the URL stored in the text file
       - name: "Authenticate to pipelinesorg Org"
         run: sf org login sfdx-url --sfdx-url-file authFile.txt
 
@@ -37,11 +36,9 @@ jobs:
         run: |
           echo ${{ secrets.SFDX_AUTH_URL2}} > ./authFile2.txt
 
-      # Authenticate to org using the URL stored in the text file
       - name: "Authenticate to miltonOrg Org"
         run: sf org login sfdx-url --sfdx-url-file authFile2.txt
 
-      - name: 'Deploy delta packages to miltonOrg'
+      - name: 'Deploy to Dev'
         run: |
-          sgd --to "main" --from "HEAD" --output .sgd
-          sf project deploy start -d .sgd --target-org "klomax@abcd.com"
+          sf project deploy start -d force-app --target-org "klomax@abcd.com"
