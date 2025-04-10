@@ -1,15 +1,15 @@
-name: Validate pull request in SIT
+name: Validate pull request in UAT
 
 on:
   pull_request:
     branches:
-      - SIT
+      - UAT
     types: [opened, synchronize]
     paths:
       - 'force-app/**'
 
 jobs:
-  validate-deployment-qa:
+  validate-deployment-staging:
     runs-on: ubuntu-latest
     container:
       image: salesforce/cli:latest-slim
@@ -19,9 +19,9 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: 'Authenticate using SFDX_AUTH_URL3'
+      - name: 'Authenticate using SFDX_AUTH_URL4'
         run: | 
-          echo ${{ secrets.SFDX_AUTH_URL3 }} | sf org login sfdx-url -s -u
+          echo ${{ secrets.SFDX_AUTH_URL4 }} | sf org login sfdx-url -s -u
 
       - name: 'Validate'
         run: |
