@@ -29,7 +29,7 @@ jobs:
         
       - name: "Create delta packages for new, modified or deleted metadata"
         run: |
-            sf sgd --to HEAD --from HEAD~1 --output delta-package
+            sfdx sgd --to HEAD --from HEAD~1 --output delta-package
             
       - name: 'Deploy delta packages to pipelinesorg'
         run: |
