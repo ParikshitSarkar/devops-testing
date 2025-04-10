@@ -26,12 +26,12 @@ jobs:
 
       - name: "Authenticate to pipelinesorg Org"
         run: sf org login sfdx-url --sfdx-url-file authFile.txt
-
+        
       - name: "Create delta packages for new, modified or deleted metadata"
         run: |
             mkdir changed-sources
             sf sgd:source:delta --to "HEAD" --from "HEAD^" --output changed-sources/ --generate-delta --source force-app/
-      
+            
       - name: 'Deploy delta packages to pipelinesorg'
         run: |
           sf sgd --to "main" --from "HEAD" --output .sgd
