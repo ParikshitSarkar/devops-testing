@@ -64,6 +64,15 @@ jobs:
               run: sf org login sfdx-url -f ./authFile.txt -s -a pipelinesorg
 
             
+            - name: "Populate auth file with SFDX_URL secret of milton org"
+              run: |
+                  echo ${{ secrets.SFDX_AUTH_URL2}} > ./authFile2.txt
+
+            
+            - name: "Authenticate to miltonorg Org"
+              run: sf org login sfdx-url -f ./authFile2.txt -s -a miltonorg
+
+            
             - name: "Create delta packages for new, modified or deleted metadata"
               run: |
                   mkdir changed-sources
