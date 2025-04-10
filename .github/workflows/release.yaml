@@ -8,7 +8,7 @@ on:
       - "force-app/**"
 
 jobs:
-  deployment-on-develop-org:
+  deployment-on-dev-orgs:
     runs-on: ubuntu-latest
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
