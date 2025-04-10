@@ -1,82 +1,71 @@
-# Unique name for this workflow
 name: Deploy to DEV-COPY & DEV ORG
 
-# Definition when the workflow should run
 on:
-    # The workflow will run whenever an event happens on a pull request
-    pull_request:
-        types: [closed]
-        branches: [ development ]
-        paths:
-            - "force-app/**"
+  pull_request:
+    types: [closed]
+    branches: [development]
+    paths:
+      - "force-app/**"
 
-# Jobs to be executed when the above conditions are met
 jobs:
-    # This is the name of the job. You can give it whatever name you want
-    deployment-on-develop-org:
-        runs-on: ubuntu-latest
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        steps:
+  deployment-on-dev-orgs:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-            - name: "Checkout source code"
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
+      - name: Cache SFDX CLI packages
+        id: cache-sfdx
+        uses: actions/cache@v3
+        with:
+          path: ~/sf
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/sfdx-project.json') }}
+        env:
+          cache-name: cache-sfdx-cli-modules
 
-            # Store SFDX CLI in Cache
-            - name: Cache SFDX CLI packages
-              id: cache-sfdx
-              uses: actions/cache@v3
-              env:
-                  cache-name: cache-sfdx-cli-modules
-              with:
-                  path: ~/sf
-                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/sfdx-project.json') }}
+      - name: Install Salesforce CLI
+        if: ${{ steps.cache-sfdx.outputs.cache-hit != 'true' }}
+        run: |
+          wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.xz
+          mkdir -p ~/sf
+          tar xJf sf-linux-x64.tar.xz -C ~/sf --strip-components 1
+          echo "$HOME/sf/bin" >> $GITHUB_PATH
+          ~/sf/bin/sf version
 
-            # Now Install Salesforce CLI
-            - name: "Install Salesforce CLI"
-              if: ${{ steps.cache-sfdx.outputs.cache-hit != 'true' }}
-              run: |
-                  wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.xz
-                  mkdir -p ~/sf
-                  tar xJf sf-linux-x64.tar.xz -C ~/sf --strip-components 1
-                  echo "$HOME/sf/bin" >> $GITHUB_PATH
-                  ~/sf/bin/sf version
+      - name: Update SFDX
+        if: ${{ steps.cache-sfdx.outputs.cache-hit == 'true' }}
+        run: |
+          echo "$HOME/sf/bin" >> $GITHUB_PATH
+          ~/sf/bin/sf version
 
-            - name: "Update SFDX"
-              if: ${{ steps.cache-sfdx.outputs.cache-hit == 'true' }}
-              run: |
-                  echo "$HOME/sf/bin" >> $GITHUB_PATH
-                  ~/sf/bin/sf version
+      - name: Install sfdx git delta
+        run: |
+          echo y | sf plugins:install sfdx-git-delta
+          sf plugins
 
-            - name: "Installing sfdx git delta"
-              run: |
-                  echo y | sf plugins:install sfdx-git-delta
-                  sf plugins
+      - name: Populate auth file with SFDX_URL secret of pipelinesorg org
+        run: echo ${{ secrets.SFDX_AUTH_URL }} > ./authFile.txt
 
-            - name: "Populate auth file with SFDX_URL secret of pipelinesorg org"
-              run: |
-                  echo ${{ secrets.SFDX_AUTH_URL}} > ./authFile.txt
+      - name: Authenticate to pipelinesorg Org
+        run: sf org login sfdx-url -f ./authFile.txt -s -a pipelinesorg
 
-            - name: "Authenticate to pipelinesorg Org"
-              run: sf org login sfdx-url -f ./authFile.txt -s -a pipelinesorg
+      - name: Populate auth file with SFDX_URL secret of milton org
+        run: echo ${{ secrets.SFDX_AUTH_URL2 }} > ./authFile2.txt
 
-            - name: "Populate auth file with SFDX_URL secret of milton org"
-              run: |
-                  echo ${{ secrets.SFDX_AUTH_URL2}} > ./authFile2.txt
+      - name: Authenticate to miltonorg Org
+        run: sf org login sfdx-url -f ./authFile2.txt -s -a miltonorg
 
-            - name: "Authenticate to miltonorg Org"
-              run: sf org login sfdx-url -f ./authFile2.txt -s -a miltonorg
+      - name: Create delta packages for new, modified or deleted metadata
+        run: |
+          mkdir changed-sources
+          sf sgd:source:delta --to "HEAD" --from "HEAD^" -o changed-sources/ --generate-delta -s force-app/
 
-            - name: "Create delta packages for new, modified or deleted metadata"
-              run: |
-                  mkdir changed-sources
-                  sf sgd:source:delta --to "HEAD" --from "HEAD^" -o changed-sources/ --generate-delta -s force-app/
-
-            - name: "Deploy Delta Changes to pipelinesorg - Dry Run - No Tests Run"
-              run: |
-                  sf project deploy start -x changed-sources/package/package.xml --post-destructive-changes changed-sources/destructiveChanges/destructiveChanges.xml -l NoTestRun --target-org pipelinesorg --json
-
-            - name: "Deploy Delta Changes to miltonorg - Dry Run - No Tests Run"
-              run: |
-                  sf project deploy start -x changed-sources/package/package.xml --post-destructive-changes changed-sources/destructiveChanges/destructiveChanges.xml -l NoTestRun --target-org miltonorg --json
+      - name: Deploy Delta Changes to pipelinesorg - Dry Run - No Tests Run
+        run: |
+          sf project deploy start -x changed-sources/package/package.xml --post-destructive-changes changed-sources/destructiveChanges/destructiveChanges.xml -l NoTestRun --target-org pipelinesorg --json
+      - name: Deploy Delta Changes to miltonorg - Dry Run - No Tests Run
+        run: |
+          sf project deploy start -x changed-sources/package/package.xml --post-destructive-changes changed-sources/destructiveChanges/destructiveChanges.xml -l NoTestRun --target-org miltonorg --json
