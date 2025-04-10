@@ -9,7 +9,7 @@ on:
       - 'force-app/**'
 
 jobs:
-  validate-deployment:
+  validate-deployment-qa:
     runs-on: ubuntu-latest
     container:
       image: salesforce/cli:latest-slim
