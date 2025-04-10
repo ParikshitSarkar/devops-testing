@@ -29,13 +29,11 @@ jobs:
         
       - name: "Create delta packages for new, modified or deleted metadata"
         run: |
-            mkdir changed-sources
-            sf sgd:source:delta --to "HEAD" --from "HEAD^" --output changed-sources/ --generate-delta --source force-app/
-      
+           sgd --to HEAD --from HEAD~1 --output delta-package
+           
       - name: 'Deploy delta packages to pipelinesorg'
         run: |
-          sf sgd --to "main" --from "HEAD" --output .sgd
-          sf project deploy start -d .sgd --target-org "dummypipelinetestingorg@abcd.com"
+          sf project deploy start -d delta-package --target-org "dummypipelinetestingorg@abcd.com"
 
       - name: "Populate auth file with SFDX_URL secret of miltonOrg org"
         run: |
