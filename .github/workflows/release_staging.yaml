@@ -57,7 +57,7 @@ jobs:
           mkdir changed-sources
           sf sgd:source:delta --to "HEAD" --from "HEAD^" -o changed-sources/ --generate-delta -s force-app/
 
-      - name: Deploy Delta Changes to pipelines_qa org - Dry Run - No Tests Run
+      - name: Deploy Delta Changes to pipelines_staging org - Dry Run - No Tests Run
         run: |
           sf project deploy start -x changed-sources/package/package.xml --post-destructive-changes changed-sources/destructiveChanges/destructiveChanges.xml -l NoTestRun --target-org pipelines_staging --json
      
